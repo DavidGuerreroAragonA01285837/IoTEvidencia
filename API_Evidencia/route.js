@@ -15,6 +15,7 @@ const DistanceController = require('./RestControllers/sensorDistancia.js');
 const HumedadController = require('./RestControllers/sensorHumedad.js');
 const porcentajeController = require('./RestControllers/sensorFotoresistencia');
 const resetController = require ('./RestControllers/Reset.js')
+const TermicSensController = require ('./RestControllers/SensacionTermica.js');
 const router = express.Router();
 
 router.get("/",function(req,res){
@@ -46,6 +47,8 @@ router.post(constants.contextURL + constants.api + constants.postHumedadSensor, 
 router.get(constants.contextURL + constants.api + constants.getFotoresistence, porcentajeController.getLogPorcentaje);
 router.post(constants.contextURL + constants.api + constants.getFotoresistenceByDate, porcentajeController.getLogPorcentajeByDate);
 router.post(constants.contextURL + constants.api + constants.postFotoresistence, porcentajeController.insertLogPorcentaje);
+router.get(constants.contextURL + constants.api + constants.getTermicalSensation, TermicSensController.getSensTerm);
+router.post(constants.contextURL + constants.api + constants.postTermicalSensation, TermicSensController.insertTermicalSensation);
 router.delete(constants.contextURL + constants.api + constants.resetRegisters, resetController.resetAll);
 
 //le decimos a Node que queremos hacer uso de nuestro router en otros archivos (como por ejemplo, app.js)

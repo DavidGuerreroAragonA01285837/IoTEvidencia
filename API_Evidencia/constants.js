@@ -43,6 +43,10 @@ const getFotoresistence = '/getPorcentaje'
 const getFotoresistenceByDate = '/getPorcentaje'
 const postFotoresistence = '/insertPorcentaje'; //Implemented Endpoint URL
 
+//Datos relacionales 1
+const getTermicalSensation = '/getST'
+const postTermicalSensation = '/insertST'; //Implemented Endpoint URL
+
 // URL to reset
 
 const resetRegisters = '/resetRegisters'
@@ -75,6 +79,11 @@ const selectPorcentaje = 'SELECT * FROM fotoresistencia';
 const selectPorcentajeByDate = 'SELECT * FROM fotoresistencia WHERE Fecha BETWEEN ? AND ?';
 const insertPorcentaje = 'INSERT INTO fotoresistencia (Porcentaje) VALUES (?)';
 
+// Queries para dato relacional sensacion termica
+
+const selectTermicalSensation = 'SELECT SUM(Sensacion) FROM (SELECT Sensacion FROM termical_sensation ORDER BY id DESC LIMIT 60) AS recent_sensations;';
+const insertTermicalSensation = 'INSERT INTO termical_sensation (Sensacion) VALUES (?)';
+
 // Queries para reiniciar las bases de datos
 
 const resetTemperature = 'TRUNCATE TABLE temps';
@@ -82,6 +91,7 @@ const resetHumidity = 'TRUNCATE TABLE sensor_humedad';
 const resetDistance = 'TRUNCATE TABLE distance';
 const resetLight = 'TRUNCATE TABLE fotoresistencia';
 const resetPresence = 'TRUNCATE TABLE presence';
+const resetTermicSens = 'TRUNCATE TABLE SensTerm';
 
 
 module.exports= {
@@ -91,5 +101,6 @@ module.exports= {
    getDistanceSensor, getByDistance, postDistanceSensor, selectDistance, selectByDistance, insertDistance, 
    getHumedadSensor, getHumedadSensorByDate, postHumedadSensor, selectHumedad, selectHumedadByDate, insertHumedad, 
    getFotoresistence, getFotoresistenceByDate, postFotoresistence, selectPorcentaje, selectPorcentajeByDate, insertPorcentaje,
-   resetDistance, resetHumidity, resetLight, resetPresence, resetTemperature, resetRegisters
+   resetDistance, resetHumidity, resetLight, resetPresence, resetTemperature, resetRegisters, getTermicalSensation, postTermicalSensation,
+   resetTermicSens, selectTermicalSensation, insertTermicalSensation
 }

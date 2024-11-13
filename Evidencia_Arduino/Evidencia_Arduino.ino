@@ -33,6 +33,7 @@ String loadHumid = IP + "/iot/api/insertHumedad/";
 String loadDist = IP + "/iot/api/insertDistance/";
 String loadPres = IP + "/iot/api/insertPresence/";
 String loadLight = IP + "/iot/api/insertPorcentaje/";
+String loadST = IP + "/iot/api/insertST";
 String reset = IP + "/iot/api/resetRegisters";
 
 HTTPClient httpClient;
@@ -115,6 +116,8 @@ void loop() {
   lcd.print(h);
   lcd.print("%");
 
+  double ST = t + 0.33 * h - 0.7;
+
   // Leer y mostrar datos del sensor ultrasónico
   long duration, distance;
   digitalWrite(trigPin, LOW);
@@ -155,18 +158,19 @@ void loop() {
 
   delay(1000);
 
-  logIntentoPOSinsert(t,h,distance,detection,light);
+  logIntentoPOSinsert(t,h,distance,detection,light,ST);
 
 }
 
 // Método POST para insertar en la base de datos
 // Método POST para insertar en la base de datos
-void logIntentoPOSinsert(float tmp, float hum, float dst, String prs, float lht) {
+void logIntentoPOSinsert(float tmp, float hum, float dst, String prs, float lht, double ST) {
   // Create the JSON payload with only the temperature
   String jsonPayloadtemp = "{\"valor\":" + String(tmp) + "}";
   String jsonPayloadhumid = "{\"valor\":" + String(hum) + "}";
   String jsonPayloaddist = "{\"valor\":" + String(dst) + "}";
   String jsonPayloadpres = "{\"valor\":\"" + prs + "\"}";
+  String jsonPayloadSensTerm = "{\"valor\":" + String(ST) + "}";
 
   Serial.print(jsonPayloadpres);
   String jsonPayloadlight = "{\"valor\":" + String(lht) + "}";
@@ -255,5 +259,22 @@ void logIntentoPOSinsert(float tmp, float hum, float dst, String prs, float lht)
   } else {
     Serial.println("Error in WiFi connection");
   }
+
+  httpClient.begin(wClient, loadST); // Use base URL for the request
+    httpClient.addHeader("Content-Type", "application/json"); // Set content type to JSON
+    
+    // Send the POST request with the JSON payload
+    httpResponseCode = httpClient.POST(jsonPayloadSensTerm); 
+
+    Serial.println("HTTP Response Code: " + String(httpResponseCode));
+    if (httpResponseCode > 0) {
+      Serial.println(httpClient.getString()); // Print the server response
+    } else {
+      Serial.print("Error on sending POST: ");
+      Serial.println(httpResponseCode); // Print error code if request fails
+    }
+
+    httpClient.end(); // Close connection
+
 }
 
