@@ -81,7 +81,7 @@ const insertPorcentaje = 'INSERT INTO fotoresistencia (Porcentaje) VALUES (?)';
 
 // Queries para dato relacional sensacion termica
 
-const selectTermicalSensation = 'SELECT SUM(Sensacion) FROM (SELECT Sensacion FROM termical_sensation ORDER BY id DESC LIMIT 60) AS recent_sensations;';
+const selectTermicalSensation = 'SELECT SUM(Sensacion)/60 FROM (SELECT Sensacion FROM termical_sensation ORDER BY id DESC LIMIT 60) AS recent_sensations;';
 const insertTermicalSensation = 'INSERT INTO termical_sensation (Sensacion) VALUES (?)';
 
 // Queries para reiniciar las bases de datos
@@ -91,7 +91,7 @@ const resetHumidity = 'TRUNCATE TABLE sensor_humedad';
 const resetDistance = 'TRUNCATE TABLE distance';
 const resetLight = 'TRUNCATE TABLE fotoresistencia';
 const resetPresence = 'TRUNCATE TABLE presence';
-const resetTermicSens = 'TRUNCATE TABLE SensTerm';
+const resetTermicSens = 'TRUNCATE TABLE termical_sensation';
 
 
 module.exports= {

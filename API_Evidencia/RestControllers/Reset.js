@@ -12,7 +12,8 @@ async function resetAll(req, res) {
         constants.resetHumidity,
         constants.resetLight,
         constants.resetPresence,
-        constants.resetTemperature
+        constants.resetTemperature,
+        constants.resetTermicSens
     ];
 
     const conn = mysql.getConnection();

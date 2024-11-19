@@ -23,17 +23,18 @@ DHT dht(DHTPin, DHTTYPE);
 // Inicializa el LCD en la dirección 0x27 (cambia si es necesario)
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-#define WIFI_SSID "Tec-IoT"
-#define WIFI_PASSWORD "spotless.magnetic.bridge"
+#define WIFI_SSID "Axtel-extremo-ecea-5Hz"
+#define WIFI_PASSWORD "7EE54CECEA"
 
 // Definición de URLs para GET y POST
-String IP = "http://10.22.134.189:3000";
+String IP = "http://192.168.28.28:3000";
 String loadTemps = IP + "/iot/api/insertTemperature/";
 String loadHumid = IP + "/iot/api/insertHumedad/";
 String loadDist = IP + "/iot/api/insertDistance/";
 String loadPres = IP + "/iot/api/insertPresence/";
 String loadLight = IP + "/iot/api/insertPorcentaje/";
 String loadST = IP + "/iot/api/insertST";
+String getTermSens = IP + "/iot/api/getST";
 String reset = IP + "/iot/api/resetRegisters";
 
 HTTPClient httpClient;
@@ -98,8 +99,12 @@ void loop() {
     Serial.println(" %");
   }
 
+  double STavg = logIntentoGETselect();
+
+  Serial.print(STavg);
+
   // Control del ventilador según la temperatura
-  if (t >= 28) {
+  if (STavg >= 28) {
     digitalWrite(FAN, HIGH);
   } else {
     digitalWrite(FAN, LOW);
@@ -116,7 +121,9 @@ void loop() {
   lcd.print(h);
   lcd.print("%");
 
-  double ST = t + 0.33 * h - 0.7;
+  double ST = -42.379 + 2.04901523 * (t * 9.0 / 5.0 + 32.0) + 10.14333127 * h - 0.22475541 * (t * 9.0 / 5.0 + 32.0) * h - 0.00683783 * (t * 9.0 / 5.0 + 32.0) * (t * 9.0 / 5.0 + 32.0) - 0.05481717 * h * h + 0.00122874 * (t * 9.0 / 5.0 + 32.0) * (t * 9.0 / 5.0 + 32.0) * h + 0.00085282 * (t * 9.0 / 5.0 + 32.0) * h * h - 0.00000199 * (t * 9.0 / 5.0 + 32.0) * (t * 9.0 / 5.0 + 32.0) * h * h;
+
+  ST =  (ST - 32.0) / 1.8;
 
   // Leer y mostrar datos del sensor ultrasónico
   long duration, distance;
@@ -256,15 +263,15 @@ void logIntentoPOSinsert(float tmp, float hum, float dst, String prs, float lht,
 
     httpClient.end(); // Close connection
     
-  } else {
+    } else {
     Serial.println("Error in WiFi connection");
-  }
+    }
 
-  httpClient.begin(wClient, loadST); // Use base URL for the request
+    httpClient.begin(wClient, loadST); // Use base URL for the request
     httpClient.addHeader("Content-Type", "application/json"); // Set content type to JSON
     
     // Send the POST request with the JSON payload
-    httpResponseCode = httpClient.POST(jsonPayloadSensTerm); 
+    int httpResponseCode = httpClient.POST(jsonPayloadSensTerm); 
 
     Serial.println("HTTP Response Code: " + String(httpResponseCode));
     if (httpResponseCode > 0) {
@@ -278,3 +285,48 @@ void logIntentoPOSinsert(float tmp, float hum, float dst, String prs, float lht,
 
 }
 
+// Metodo GET para consultar la base de datos
+double logIntentoGETselect() {
+  String data = getTermSens;
+  Serial.println(data);
+
+  if (WiFi.status() == WL_CONNECTED) {
+    httpClient.begin(wClient, data.c_str());
+    int httpResponseCode = httpClient.GET();
+    Serial.println(httpResponseCode);
+
+    if (httpResponseCode > 0) {
+      String response = httpClient.getString();  // Get the full response body as a string
+      Serial.println(response);  // Print the response
+
+      String extractedNumber = "";
+      bool isNumber = false;
+
+      // Iterate through the string to find the number
+      for (int i = 30; i < response.length(); i++) {
+        char c = response[i];
+
+        // Check if the character is part of a number (digits or decimal point)
+        if ((c >= '0' && c <= '9') || c == '.') {
+          isNumber = true;              // Start recording when a number begins
+          extractedNumber += c;         // Append the digit or decimal point
+        } else if (isNumber) {
+          break;                        // Stop recording when the number ends
+        }
+      }
+
+      // If a number was extracted, convert it to an integer and return
+      if (extractedNumber.length() > 0) {
+        float extractedValue = extractedNumber.toFloat();
+        Serial.println("Extracted Number: " + String(extractedValue));
+        return extractedValue;  // Return the extracted number as a float or convert it to int
+      }
+    } else {
+      Serial.println("Error in GET request");
+    }
+    httpClient.end();  // Close the connection
+  } else {
+    Serial.println("Error in WiFi connection");
+  }
+  return -1;  // Return a default value in case of failure
+}
