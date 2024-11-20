@@ -23,11 +23,11 @@ DHT dht(DHTPin, DHTTYPE);
 // Inicializa el LCD en la dirección 0x27 (cambia si es necesario)
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-#define WIFI_SSID "Axtel-extremo-ecea-5Hz"
-#define WIFI_PASSWORD "7EE54CECEA"
+#define WIFI_SSID "Tec-IoT"
+#define WIFI_PASSWORD "spotless.magnetic.bridge"
 
 // Definición de URLs para GET y POST
-String IP = "http://192.168.28.28:3000";
+String IP = "http://10.22.133.37:3000";
 String loadTemps = IP + "/iot/api/insertTemperature/";
 String loadHumid = IP + "/iot/api/insertHumedad/";
 String loadDist = IP + "/iot/api/insertDistance/";
@@ -70,12 +70,6 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nConexión WiFi establecida.");
-
-  httpClient.begin(wClient, reset); // Use base URL for the request
-
-  int httpResponseCode = httpClient.sendRequest("DELETE"); // Perform the DELETE request
-
-  httpClient.end(); // Close connection
 
 }
 
@@ -140,12 +134,10 @@ void loop() {
   // Leer el estado del sensor PIR y activar el buzzer si detecta movimiento
   int pirState = digitalRead(pirPin);
   if (pirState == HIGH) {
-    digitalWrite(buzzerPin, HIGH);  // Encender buzzer
     Serial.println("Movimiento detectado");
     presence = 1;
     detection = "V";
   } else {
-    digitalWrite(buzzerPin, LOW);   // Apagar buzzer
     presence = 0;
     detection = "F";
   }

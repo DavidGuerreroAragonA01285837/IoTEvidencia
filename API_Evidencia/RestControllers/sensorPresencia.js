@@ -150,6 +150,31 @@ async function insertLogPresence(req,res){
   
 }
 
+async function getLastPres(req, res) {
+  try {
+    const sql = constants.selectLastPres; // Query string
+    const conn = mysql.getConnection(); // Get connection instance
+
+    conn.connect((error) => {
+      if (error) throw error;
+
+      conn.query(sql, (error, data, fields) => {
+        if (error) {
+          res.status(500).send(error.message);
+        } else {
+          // Assuming `data` is an array of rows and we need the first column's value from the first row
+          const value = data.length > 0 ? data[0][Object.keys(data[0])[0]] : null;
+          res.send(value !== null ? String(value) : ""); // Send only the number as a string
+        }
+        conn.end();
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+}
 
 
-module.exports = {insertLogPresence, getLogPresence,getLogByDateBetweenPresence};
+
+module.exports = {insertLogPresence, getLogPresence,getLogByDateBetweenPresence,getLastPres};

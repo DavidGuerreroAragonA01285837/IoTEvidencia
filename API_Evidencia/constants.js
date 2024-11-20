@@ -27,11 +27,13 @@ const postTemperatureSensor = '/insertTemperature'; //Implemented Endpoint URL
 const getPresenceSensor = '/getPresence'
 const getPresenceSensorByDate = '/getPresence'
 const postPresenceSensor = '/insertPresence'; //Implemented Endpoint URL
+const getRefilPres = '/getRefPres';
 
 //SENSOR 3 URLS. Configurar URLS por cada sensor.
 const getDistanceSensor = '/getDistance'
 const getByDistance = '/getDistance'
 const postDistanceSensor = '/insertDistance'; //Implemented Endpoint URL
+const getRefilDist = '/getRefDist';
 
 // URLS de los Endpoints de sensor_humedad
 const getHumedadSensor = '/getHumedad';
@@ -63,11 +65,13 @@ const insertTemperature = 'INSERT INTO temps (valor) values (?)';
 const selectPresence = 'SELECT * FROM presence';
 const selectPresenceByDate = 'SELECT * FROM presence WHERE fecha between ? and ?';
 const insertPresence = 'INSERT INTO presence (deteccion) values (?)';
+const selectLastPres = 'SELECT deteccion FROM presence ORDER BY id DESC LIMIT 1;';
 
 // Queries para sensor de Distancia
 const selectDistance = 'SELECT * FROM distance';
 const selectByDistance = 'SELECT * FROM distance WHERE distancia between ? and ?';
 const insertDistance = 'INSERT INTO distance (distancia) values (?)';
+const refillDist = 'SELECT SUM(distancia)/60 FROM (SELECT distancia FROM distance ORDER BY id DESC LIMIT 5) AS distance;';
 
 // Queries para sensor de humedad
 const selectHumedad = 'SELECT * FROM sensor_humedad';
@@ -102,5 +106,5 @@ module.exports= {
    getHumedadSensor, getHumedadSensorByDate, postHumedadSensor, selectHumedad, selectHumedadByDate, insertHumedad, 
    getFotoresistence, getFotoresistenceByDate, postFotoresistence, selectPorcentaje, selectPorcentajeByDate, insertPorcentaje,
    resetDistance, resetHumidity, resetLight, resetPresence, resetTemperature, resetRegisters, getTermicalSensation, postTermicalSensation,
-   resetTermicSens, selectTermicalSensation, insertTermicalSensation
+   resetTermicSens, selectTermicalSensation, insertTermicalSensation, getRefilPres, getRefilDist, refillDist,selectLastPres
 }

@@ -37,8 +37,10 @@ router.post(constants.contextURL + constants.api + constants.getTemperatureSenso
 router.post(constants.contextURL + constants.api + constants.postTemperatureSensor,temperaturaController.insertLogTemperatura);
 router.get(constants.contextURL + constants.api + constants.getPresenceSensor, PresenceController.getLogPresence);
 router.post(constants.contextURL + constants.api + constants.getPresenceSensorByDate, PresenceController.getLogByDateBetweenPresence);
+router.get(constants.contextURL + constants.api + constants.getRefilPres, PresenceController.getLastPres);
 router.post(constants.contextURL + constants.api + constants.postPresenceSensor,PresenceController.insertLogPresence);
 router.get(constants.contextURL + constants.api + constants.getDistanceSensor, DistanceController.getLogDistance);
+router.get(constants.contextURL + constants.api + constants.getRefilDist, DistanceController.getRefDistance);
 router.post(constants.contextURL + constants.api + constants.getByDistance, DistanceController.getLogByDistance);
 router.post(constants.contextURL + constants.api + constants.postDistanceSensor, DistanceController.insertLogDistance);
 router.get(constants.contextURL + constants.api + constants.getHumedadSensor, HumedadController.getLogHumedad);
